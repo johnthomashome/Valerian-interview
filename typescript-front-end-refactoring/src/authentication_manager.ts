@@ -24,6 +24,23 @@ export class AuthenticationManager {
   
     private validateToken(token): Promise<boolean> {
       return new Promise((resolve, reject) => {
+        // Need error handling here -- log the errors -- much easier to debug.
+        // use something like:
+        // const response = await fetch(this.baseUrl + "/validateToken", {
+        //     method: "POST",
+        //     mode: "cors",
+        //         headers: {
+        //           "Content-Type": "application/json",
+        //         },
+        //     referrerPolicy: "no-referrer",
+        //     body: JSON.stringify({ token }),
+        // });
+       
+        // if (!response.ok) {
+        //  throw new HttpError(response.status, "HTTP error");
+        // }
+        // ....
+          
         fetch(this.baseUrl + "/validateToken", {
           method: "POST",
           mode: "cors",
@@ -45,6 +62,7 @@ export class AuthenticationManager {
     }
   
     public login(username, password, rememberMe): Promise<any> {
+      // ensure HTTPS before proceeding.
       return new Promise((resolve, reject) => {
         fetch(this.baseUrl + "/login", {
           method: "POST",
@@ -60,7 +78,7 @@ export class AuthenticationManager {
               const token = await response.json();
               localStorage.setItem("auth_token", token);  
             }
-            
+            // This logic is already implemented in the getProfile function .. just call it here rather than duplicate the logic.
             fetch(this.baseUrl + "/profile/" + username, {
               method: "GET",
               mode: "cors",
@@ -104,6 +122,7 @@ export class AuthenticationManager {
         referrerPolicy: "no-referrer",
       }).then((response) => {
         let profile = response.json();
+        // consider working with tech lead to add the role info to the profile in the backend, thus saving a call
         fetch(this.baseUrl + "/roles/" + username, {
           method: "GET",
           mode: "cors",
@@ -129,7 +148,8 @@ export class AuthenticationManager {
       });
   
       localStorage.removeItem("auth_token");
-  
+
+      // remove prior to PR  
       // await fetch(this.baseUrl + "/get?token=" + token, {
       //   method: "GET",
       //   mode: "cors",
